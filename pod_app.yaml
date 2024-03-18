@@ -15,16 +15,16 @@ spec:
     spec:
       containers:
         - name: app
-          image: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/app-lanchonete:latest
+          image: 874454224631.dkr.ecr.us-east-1.amazonaws.com/app-lanchonete:latest
           ports:
             - containerPort: 80
           resources:
             limits:
               cpu: "0.5"  # Defina os limites de CPU conforme necessário
-              memory: "64Mi"  # Defina os limites de memória conforme necessário
+              memory: "256Mi"  # Defina os limites de memória conforme necessário
             requests:
               cpu: "0.25"  # Defina as solicitações de CPU conforme necessário
-              memory: "64Mi"  # Defina as solicitações de memória conforme necessário
+              memory: "256Mi"  # Defina as solicitações de memória conforme necessário
 ---
 apiVersion: v1
 kind: Service
