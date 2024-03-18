@@ -1,4 +1,4 @@
-name: Build and Push Docker Image to ECR
+name: Build and Push Docker Image to ECR and deploy eks
 
 on:
   push:
@@ -10,6 +10,9 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+
+    env:
+      EKS_CLUSTER_NAME: ${{ secrets.EKS_CLUSTER_NAME }}
 
     steps:
       - name: Checkout code
@@ -26,7 +29,7 @@ jobs:
           aws ecr describe-repositories --repository-names app-lanchonete || aws ecr create-repository --repository-name app-lanchonete
 
       - name: Login to Amazon ECR
-        run: aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+        run: aws ecr get-login-password --region $EKS_CLUSTER_NAME | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
 
       - name: Build Docker image
         run: docker build -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/app-lanchonete:latest .
@@ -36,7 +39,7 @@ jobs:
 
       # Set kubeconfig for the specified EKS cluster
       - name: Set kubeconfig for EKS cluster
-        run: aws eks update-kubeconfig --name ${{EKS_CLUSTER_NAME}} --region ${{ secrets.AWS_REGION }}
+        run: aws eks update-kubeconfig --name $EKS_CLUSTER_NAME --region ${{ secrets.AWS_REGION }}
 
       # Apply Kubernetes app
       - name: Apply Kubernetes app
