@@ -35,7 +35,7 @@ jobs:
         run: docker build -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/app-lanchonete:latest .
 
       - name: Push Docker image to ECR
-        run: docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/app-lanchonete:latest
+        run: docker push 874454224631.dkr.ecr.us-east-1.amazonaws.com/app-lanchonete:latest
 
       # Set kubeconfig for the specified EKS cluster
       - name: Set kubeconfig for EKS cluster
