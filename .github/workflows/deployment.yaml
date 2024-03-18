@@ -1,4 +1,4 @@
-name: Build and Push Docker Image to ECR and Deploy to EKS
+name: Build and Push Docker Image to ECR
 
 on:
   push:
@@ -12,36 +12,43 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      AWS_REGION: ${{ secrets.AWS_REGION }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_ID }}
-      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       EKS_CLUSTER_NAME: ${{ secrets.EKS_CLUSTER_NAME }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Login to Amazon ECR
-        run: aws --version  # Instala o AWS CLI v2
+      - name: Configure AWS credentials
+        run: |
+          aws configure set aws_access_key_id "${{ secrets.AWS_ACCESS_KEY_ID }}"
+          aws configure set aws_secret_access_key "${{ secrets.AWS_SECRET_ACCESS_KEY_ID }}"
+          aws configure set region "${{ secrets.AWS_REGION }}"
+
+      - name: Verify or Create ECR repository
+        run: |
+          aws ecr describe-repositories --repository-names app-lanchonete || aws ecr create-repository --repository-name app-lanchonete
 
       - name: Login to Amazon ECR
-        run: aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+        run: aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
 
       - name: Build Docker image
-        run: docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/app-lanchonete:latest .
+        run: docker build -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/app-lanchonete:latest .
 
       - name: Push Docker image to ECR
-        run: docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/app-lanchonete:latest
+        run: docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/app-lanchonete:latest
 
+      # Set kubeconfig for the specified EKS cluster
       - name: Set kubeconfig for EKS cluster
-        run: aws eks update-kubeconfig --name $EKS_CLUSTER_NAME --region $AWS_REGION
-
-      - name: Aplly Kubernetes HPA
+        run: aws eks update-kubeconfig --name $EKS_CLUSTER_NAME --region ${{ secrets.AWS_REGION }}
+      
+      # Set hpa
+      - name: Aplly kubernetes hpa
         run: kubectl apply -f hpa.yml
 
-      - name: Aplly Kubernetes Service
+      # Set service
+      - name: Aplly kubernetes service
         run: kubectl apply -f service.yml
 
+      # Apply Kubernetes app
       - name: Apply Kubernetes app
         run: kubectl apply -f pod_app.yaml
