@@ -41,6 +41,14 @@ jobs:
       - name: Set kubeconfig for EKS cluster
         run: aws eks update-kubeconfig --name $EKS_CLUSTER_NAME --region ${{ secrets.AWS_REGION }}
       
+      # Set hpa
+      - name: Aplly kubernetes hpa
+        run: kubectl apply -f hpa.yml
+
+      # Set service
+      - name: Aplly kubernetes service
+        run: kubectl apply -f service.yml
+
       # Apply Kubernetes app
       - name: Apply Kubernetes app
         run: kubectl apply -f pod_app.yaml
