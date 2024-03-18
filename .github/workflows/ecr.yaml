@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main  # ou a branch desejada
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
   build-and-push:
