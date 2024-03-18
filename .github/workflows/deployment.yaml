@@ -26,7 +26,7 @@ jobs:
 
       - name: Verify or Create ECR repository
         run: |
-          aws ecr describe-repositories --repository-names app-lanchonete || aws ecr create-repository --repository-name app-lanchonete
+          aws ecr describe-repositories --repository-names app || aws ecr create-repository --repository-name app
 
       - name: Login to Amazon ECR
         run: aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
