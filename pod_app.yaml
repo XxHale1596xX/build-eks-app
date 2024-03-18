@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: app
-  namespace: my-namespace  # Defina o namespace desejado
+  namespace: app-lanchonete  # Defina o namespace desejado
 spec:
   replicas: 1
   selector:
