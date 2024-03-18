@@ -33,3 +33,11 @@ jobs:
 
       - name: Push Docker image to ECR
         run: docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/app-lanchonete:latest
+
+      # Set kubeconfig for the specified EKS cluster
+      - name: Set kubeconfig for EKS cluster
+        run: aws eks update-kubeconfig --name ${{EKS_CLUSTER_NAME}} --region ${{ secrets.AWS_REGION }}
+
+      # Apply Kubernetes app
+      - name: Apply Kubernetes app
+        run: kubectl apply -f pod_app.yaml
