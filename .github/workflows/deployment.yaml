@@ -51,4 +51,4 @@ jobs:
 
       # Apply Kubernetes app
       - name: Apply Kubernetes app
-        run: kubectl apply -f pod_app.yaml
+        run: kubectl apply -f pod_app.yml
