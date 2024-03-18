@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: app
+  namespace: my-namespace  # Defina o namespace desejado
 spec:
   replicas: 1
   selector:
@@ -17,11 +18,19 @@ spec:
           image: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/app-lanchonete:latest
           ports:
             - containerPort: 80
+          resources:
+            limits:
+              cpu: "0.5"  # Defina os limites de CPU conforme necessário
+              memory: "128Mi"  # Defina os limites de memória conforme necessário
+            requests:
+              cpu: "0.25"  # Defina as solicitações de CPU conforme necessário
+              memory: "128Mi"  # Defina as solicitações de memória conforme necessário
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: app
+  namespace: my-namespace  # Defina o namespace desejado
 spec:
   selector:
     app: app
@@ -34,6 +43,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: app-ingress
+  namespace: app-lanchonete  # Defina o namespace desejado
 spec:
   rules:
     - host: app-lanchonete.com
