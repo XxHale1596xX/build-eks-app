@@ -43,4 +43,5 @@ jobs:
 
       # Apply Kubernetes app
       - name: Apply Kubernetes app
+        run: kubectl create namespace app-lanchonete
         run: kubectl apply -f pod_app.yaml
