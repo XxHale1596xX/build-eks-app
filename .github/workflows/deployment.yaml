@@ -40,10 +40,6 @@ jobs:
       # Set kubeconfig for the specified EKS cluster
       - name: Set kubeconfig for EKS cluster
         run: aws eks update-kubeconfig --name $EKS_CLUSTER_NAME --region ${{ secrets.AWS_REGION }}
-
-      # Create namespace
-      - name: create namespace
-        run: kubectl create namespace app-lanchonete
       
       # Apply Kubernetes app
       - name: Apply Kubernetes app
